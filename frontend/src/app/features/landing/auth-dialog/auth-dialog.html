@@ -1,4 +1,8 @@
-<h2 mat-dialog-title>{{ mode === 'login' ? 'Connexion' : 'Inscription' }}</h2>
+<h2 mat-dialog-title>
+    @if (mode === 'login') { Connexion }
+    @else if (mode === 'register') { Inscription }
+    @else { Mot de passe oublié }
+</h2>
 
 <mat-dialog-content>
     @if (mode === 'login') {
@@ -17,6 +21,7 @@
             <mat-error>6 caractères minimum</mat-error>
             }
         </mat-form-field>
+        <!-- <p class="forgot-link"><a (click)="switchMode('forgot')">Mot de passe oublié ?</a></p> -->
         @if (errorMessage) { <p class="error-message">{{ errorMessage }}</p> }
         <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="isSubmitting()">
             @if (isSubmitting()) {
@@ -31,7 +36,7 @@
         }
         <p class="switch-text">Pas de compte ? <a (click)="switchMode('register')">S'inscrire</a></p>
     </form>
-    } @else {
+    } @else if (mode === 'register') {
     <form [formGroup]="registerForm" (ngSubmit)="onRegister()" class="dialog-form">
         <mat-form-field appearance="outline" class="full-width">
             <mat-label>Nom</mat-label>
@@ -67,6 +72,32 @@
         <p class="hint-text">Cela peut prendre un moment...</p>
         }
         <p class="switch-text">Déjà un compte ? <a (click)="switchMode('login')">Se connecter</a></p>
+    </form>
+    } @else {
+    <form [formGroup]="forgotForm" (ngSubmit)="onForgotPassword()" class="dialog-form">
+        <p class="forgot-description">
+            Saisissez votre adresse email, nous vous enverrons un lien pour réinitialiser votre mot de passe.
+        </p>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" />
+            @if (forgotForm.get('email')?.invalid && forgotForm.get('email')?.touched) {
+            <mat-error>Email invalide</mat-error>
+            }
+        </mat-form-field>
+        @if (errorMessage) { <p class="error-message">{{ errorMessage }}</p> }
+        @if (forgotSuccessMessage) { <p class="success-message">{{ forgotSuccessMessage }}</p> }
+        <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="isSubmitting()">
+            @if (isSubmitting()) {
+            <mat-spinner diameter="20" style="display: inline-block; margin-right: 8px;"></mat-spinner>
+            Envoi...
+            } @else {
+            Envoyer le lien
+            }
+        </button>
+        <p class="switch-text">
+            <a (click)="switchMode('login')">Retour à la connexion</a>
+        </p>
     </form>
     }
 </mat-dialog-content>

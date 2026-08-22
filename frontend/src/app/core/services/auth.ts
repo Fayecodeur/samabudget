@@ -10,6 +10,10 @@ interface AuthResponse {
   user: User;
 }
 
+interface MessageResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -32,6 +36,14 @@ export class Auth {
         this.currentUser.set(response.user);
       }),
     );
+  }
+
+  forgotPassword(email: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<MessageResponse> {
+    return this.http.post<MessageResponse>(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 
   logout(): void {

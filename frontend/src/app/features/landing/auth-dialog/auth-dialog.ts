@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { Auth } from '../../../core/services/auth';
 import { NotificationService } from '../../../core/services/notification';
 import { MatProgressSpinnerModule, MatProgressSpinner } from '@angular/material/progress-spinner';
+
 @Component({
   selector: 'app-auth-dialog',
   imports: [
@@ -22,11 +23,14 @@ import { MatProgressSpinnerModule, MatProgressSpinner } from '@angular/material/
   styleUrl: './auth-dialog.scss',
 })
 export class AuthDialog {
-  mode: 'login' | 'register';
+  mode: 'login' | 'register' | 'forgot';
   loginForm: FormGroup;
   registerForm: FormGroup;
+  forgotForm: FormGroup;
   errorMessage = '';
+  forgotSuccessMessage = '';
   isSubmitting = signal(false);
+
   constructor(
     private fb: FormBuilder,
     private authService: Auth,
@@ -48,11 +52,16 @@ export class AuthDialog {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+
+    this.forgotForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+    });
   }
 
-  switchMode(mode: 'login' | 'register'): void {
+  switchMode(mode: 'login' | 'register' | 'forgot'): void {
     this.mode = mode;
     this.errorMessage = '';
+    this.forgotSuccessMessage = '';
   }
 
   onLogin(): void {
@@ -94,6 +103,30 @@ export class AuthDialog {
       },
       error: (err) => {
         this.errorMessage = err.error?.message || "Erreur lors de l'inscription";
+        this.isSubmitting.set(false);
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  onForgotPassword(): void {
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting.set(true);
+    this.errorMessage = '';
+    const { email } = this.forgotForm.value;
+
+    this.authService.forgotPassword(email).subscribe({
+      next: (res) => {
+        this.forgotSuccessMessage = res.message;
+        this.isSubmitting.set(false);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Erreur, veuillez réessayer';
         this.isSubmitting.set(false);
         this.cdr.detectChanges();
       },
