@@ -53,3 +53,9 @@
 ::ng-deep .user-menu .mat-mdc-menu-item:hover {
   background: var(--primary-light);
 }
+
+@media (max-width: 640px) {
+  .toolbar-title {
+    display: none;
+  }
+}
