@@ -1,27 +1,15 @@
 import { Injectable } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { toast } from 'ngx-sonner';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor(private snackBar: MatSnackBar) {}
-
   success(message: string, duration = 3000): void {
-    this.snackBar.open(message, '', {
-      duration,
-      panelClass: ['app-toast-success'],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-    });
+    toast.success(message, { duration });
   }
 
   error(message: string, duration = 4000): void {
-    this.snackBar.open(message, '', {
-      duration,
-      panelClass: ['app-toast-error'],
-      horizontalPosition: 'right',
-      verticalPosition: 'top',
-    });
+    toast.error(message, { duration });
   }
 }
